@@ -9,32 +9,47 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var sliderValue: Double = 0.5
+    @State private var isImagePickerPresented: Bool = false
+    @State private var selectedImage: UIImage? = nil
     var body: some View {
         ZStack {
             Color.black
             VStack {
-                Image("img")
-                    .resizable()
-                    .ignoresSafeArea()
+                if let selectedImage = selectedImage {
+                    Image(uiImage: selectedImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .ignoresSafeArea()
+                } else {
+                    Image("img")
+                        .resizable()
+                        .ignoresSafeArea()
+                }
                 Spacer(minLength: 50)
                 Slider(value: $sliderValue, in: 0...1)
                     .padding(.leading, 50)
                     .padding(.trailing, 50)
-                Spacer(minLength: 50)
-                ButtonRowView()
-                Spacer(minLength: 50)
+                    .padding(.bottom, 20)
+                ButtonRowView(isImagePickerPresented: $isImagePickerPresented)
+                    .padding(.bottom, 60)
+                //Spacer()
             }
         }
         .ignoresSafeArea()
+        .sheet(isPresented: $isImagePickerPresented, content: {
+            ImagePicker(selectedImage: $selectedImage)
+        })
     }
     
 }
 
 struct ButtonRowView: View {
+    @Binding var isImagePickerPresented: Bool
     var body: some View {
         HStack(spacing: 40) {
             ButtonView(imageName: "photo") {
                 debugPrint("Tapped photo")
+                isImagePickerPresented = true
             }
             
             ButtonView(imageName: "arrowshape.turn.up.backward.fill") {
